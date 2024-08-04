@@ -1,7 +1,7 @@
 import tkinter as tk
 
 import hero
-import home
+import member
 import sidebar
 
 from settings import *
@@ -17,6 +17,7 @@ if __name__ == '__main__':
     WIN_POS_Y = int((window.winfo_screenheight() / 2) - WIN_POS_Y)
 
     window.title('Association of Computer Science Students | CITE Members\' Specialization Data ')
+    window.minsize(1100, 724)
     window.geometry(f'{WIDTH}x{HEIGHT}+{WIN_POS_X}+{WIN_POS_Y}')
     # window.attributes('-fullscreen', True)
     # window.resizable(False, False)
@@ -26,7 +27,7 @@ if __name__ == '__main__':
 
     hero.init(canvas)
     sidebar.init(canvas)
-    # home.init(canvas)
+    member.init(canvas)
 
 
     window.bind('<Key>', on_key_press)

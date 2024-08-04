@@ -8,6 +8,9 @@ FuturaHeavy = 'assets/font/futura/Futura Heavy font.ttf'
 FONT = lambda font, size: ImageFont.truetype(font, size)
 
 PRIMARY_COLOR = '#716EF4'
+SECONDARY_COLOR = '#F2F46E'
+SUCCES_COLOR = '#91F46E'
+ERROR_COLOR = '#F46E6E'
 
 WIDTH = 1280
 HEIGHT = 768

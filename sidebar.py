@@ -27,17 +27,17 @@ def init(master: tk.Canvas):
 
     homeBtn = Otk.Button(canvas, text='HOME', font=FONT(FuturaHeavy, 24), foreground='white', 
                          outline=PRIMARY_COLOR, width=180, border=1, radius=100, angle=-90, background=PRIMARY_COLOR,
-                         corners=[True, True, False, False],
+                         corners=[True, True, False, False], padding=10,
                          command=lambda event: home.init(master))
     homeBtn.place(y=10, x=0)
     memberBtn = Otk.Button(canvas, text='MEMBERS', font=FONT(FuturaHeavy, 24), foreground='white', 
                          outline=PRIMARY_COLOR, width=180, border=1, radius=100, angle=-90, background=PRIMARY_COLOR,
-                         corners=[True, True, False, False],
+                         corners=[True, True, False, False], padding=10,
                            command=lambda event: member.init(master))
     memberBtn.place(y=230, x=0)
     settingBtn = Otk.Button(canvas, text='SETTINGS', font=FONT(FuturaHeavy, 24), foreground='white', 
                          outline=PRIMARY_COLOR, width=180, border=1, radius=100, angle=-90, background=PRIMARY_COLOR,
-                         corners=[True, True, False, False],
+                         corners=[True, True, False, False], padding=10,
                            command=lambda event: master.delete('all'))
     settingBtn.place(y=450, x=0)
 
