@@ -26,16 +26,18 @@ class Label(Opk):
         # Text
         self._text = str(text)
         self._font = font
+
         # Text Size
-        self._left, self._top, self._right, self._bottom = self._font.getbbox(self._text)
+        self._bbox = self._font.getbbox(self._text)
+        
         # Size
         self._border = border
         if type(padding) == int:
             self._padding = [padding, padding]
         else:
             self._padding = padding
-        self._width = (width if width > (self._right - self._left) else (self._right - self._left)) + self._padding[0]*2
-        self._height = (height if height > (self._bottom - self._top) else (self._bottom - self._top)) + self._padding[1]*2
+        self._width = (width if width > (self._bbox[2] - self._bbox[0]) else (self._bbox[2] - self._bbox[0])) + self._padding[0]*2
+        self._height = (height if height > (self._bbox[3] - self._bbox[1]) else (self._bbox[3] - self._bbox[1])) + self._padding[1]*2
         self._radius = radius
         # Color
         self._foreground = foreground if foreground != ... else '#000'
@@ -65,7 +67,7 @@ class Label(Opk):
 
     def __create_text(self):
         draw = ImageDraw.Draw(self._rect)
-        draw.text((self._padding[0], -self._top+self._padding[1]), text=self._text, fill=self._foreground if self._foreground != ... else '#0000', font=self._font)
+        draw.text((self._padding[0], -self._bbox[1]+self._padding[1]), text=self._text, fill=self._foreground if self._foreground != ... else '#0000', font=self._font)
 
     def __create_background(self):
         draw = ImageDraw.Draw(self._rect)
@@ -321,6 +323,7 @@ class Create_Calendar(Opk):
         self._font = font
         self._fontSize = self._font.getbbox('W')[3]
         self._parent = parent
+        self.__isSet = False
 
         self._current_month = 0
         for month in range(len(self._monthNames)):
@@ -361,13 +364,14 @@ class Create_Calendar(Opk):
             self._current_month = 12  if direction == 'up' else -1
         self._current_month += -1 if direction == 'up' else 1
         if self._current_month == (11 if direction == 'up' else 0):
-            self._yearLabel.change_text(text=str(int(self._yearLabel._text)+(-1 if direction == 'up' else 1)))
+            self._year = str(int(self._yearLabel._text)+(-1 if direction == 'up' else 1))
+        self._yearLabel.change_text(text=self._year)
         self._monthLabel.change_text(text=self._monthNames[self._current_month])
         self._monthLabel.place(x=5, y=5)
         self._yearLabel.place(x=self._monthLabel._width+10, y=5)
         self._calendar_canvas.tag_raise(self.s.ID)
         self._body.delete('all')
-        self.__displayDate()
+        self.__generateDay(False)
 
     def __calculate_day_of_week(self, date_str):
         # Parse the date string into day, month, and year
@@ -430,7 +434,7 @@ class Create_Calendar(Opk):
         # return weekdays[total]
         return total
 
-    def __displayDate(self):
+    def __generateDay(self, isStart = True):
         column = 0
         row = 0
         for week in self._weekend:
@@ -446,25 +450,32 @@ class Create_Calendar(Opk):
         isCurrentMonth = False
         isNextMonth = False
         for day in range(7*6):
-            days[day+1] = Button(self._body, str(displayDay), self._font, hover=False, radius=0, width=28, foreground='#aaa' if not isCurrentMonth else '#000',
-                          command= lambda event, day=day: self.__DayClick(days[day+1]))
-            days[day+1].place(rely=(1/8)*row, y=(row*3)+3, relx=(1/7)*column, x=self._fontSize-3, anchor='n')
+            days[day+1] = Button(self._body, str(displayDay), self._font, hover=False, radius=0, width=28, foreground='#aaa' if not isCurrentMonth else '#000')
             if self.__monthDays(self._monthNames[self._current_month]) > displayDay and isCurrentMonth:
-                displayDay += 1
-            elif self.__monthDays(self._monthNames[self._current_month-1]) > displayDay and isPrevMonth:
-                displayDay += 1
-            elif isNextMonth:
-                displayDay += 1
+                days[day+1].command = lambda event, day=day: self.__selectDay(days[day+1])
+            elif self.__monthDays(self._monthNames[self._current_month-1]) > displayDay and isPrevMonth or isNextMonth:
+                days[day+1].hand = ''
             else:
+                if isCurrentMonth:
+                    days[day+1].hand = 'hand2' 
+                    days[day+1].command = lambda event, day=day: self.__selectDay(days[day+1])
+                    isCurrentMonth = False
+                    isNextMonth = True
+                if not isNextMonth:
+                    isCurrentMonth = True
+                    days[day+1].hand = ''
                 isPrevMonth = False
-                isNextMonth = True if isCurrentMonth else False
-                isCurrentMonth = True if not isCurrentMonth else False
-                displayDay = 1
+                displayDay = 0
+            displayDay += 1
+            days[day+1].place(rely=(1/8)*row, y=(row*3)+3, relx=(1/7)*column, x=self._fontSize-3, anchor='n')
             if (day+1) % 7 == 0:
                 column = 0
                 row += 1
             else:
                 column += 1
+
+        if isStart:
+            self.__selectDay(days[int(self._day)+self.__calculate_day_of_week(f'{self._current_month}-{self.__monthDays(self._monthNames[self._current_month-1])}-{str(int(self._yearLabel._text)+(-1 if self._current_month == 0 else 0))}')+1])
 
     def __changeMonth(self):
         pass
@@ -483,9 +494,10 @@ class Create_Calendar(Opk):
 
         self._calendar_canvas.place(height=((self._fontSize+6)*8)+6)
         self._body.place(y=(self._fontSize)+5, x=1, relheight=1, relwidth=1, height=-((self._fontSize)+6), width=-2)
-        self.__displayDate()
+        self.__isSet = True
+        self.__generateDay()
 
-    def __DayClick(self, widget):
+    def __selectDay(self, widget):
         try:
             if type(self._Selected_ID) == int:
                 self._body.delete(self._Selected_ID)
@@ -502,7 +514,10 @@ class Create_Calendar(Opk):
         self._render = ImageTk.PhotoImage(rect)
         self._Selected_ID = self._body.create_image(bbox[0]+1, bbox[1]-((circumference-1)/4), anchor='nw', image=self._render)
         self._body.tag_lower(self._Selected_ID)
-        self._parent._textVariable.set(f'{self._current_month+1 if int(self._current_month+1) > 9 else '0'+str(self._current_month+1)}-{day if int(day) > 9 else '0'+day}-{self._yearLabel._text}')
+        self._parent._textVariable.set(f'{self._current_month+1 if int(self._current_month+1) > 9 else '0'+str(self._current_month+1)}-{day if int(day) > 9 else '0'+day}-{self._year}')
+        if not self.__isSet:
+            self.destroy()
+        self.__isSet = False
         self._parent._entry.config(foreground='#000')
 
     def destroy(self):
@@ -535,6 +550,7 @@ class Button(Opk):
         self.__isPlaced = False
         # Command
         self.command = command if command != ... else 'No Command Set'
+        self.hand = 'hand2'
 
         self._rect = Image.new('RGBA', (
                                 self._width + (self._padding*2),
@@ -606,7 +622,7 @@ class Button(Opk):
         self.__canvas_height = event.height
 
     def onhover(self, event, expand = 10):
-        event.widget.config(cursor='hand2')
+        event.widget.config(cursor=self.hand)
         if not self._canHover:
             return 0
 
