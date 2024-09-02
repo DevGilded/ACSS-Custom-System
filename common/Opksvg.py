@@ -4,18 +4,19 @@ from typing import Any
 
 tempOutput = []
 
-def ToPNG(file_path: str, scale: int = 1, output_height: Any | None = None, output_width: Any | None = None) -> str:
+def ToPNG(file_path: str, scale: float = 1, output_height: Any | None = None, output_width: Any | None = None) -> str:
     global tempOutput
     try:
-        imgName = file_path.split('/')[-1].split('.')
-        print(imgName)
-        imgName = f'assets\\temp\\image\\{imgName[0]}.png'
+        img_name = file_path.split('/')[-1].split('.')
+        # print(file_path)
+        # print(img_name)
+        img_name = f'assets\\temp\\image\\{img_name[0]}.png'
     except:
         pass
 
-    cairosvg.svg2png(url=file_path, write_to=imgName, scale=scale, output_height=output_height, output_width=output_width)
-    tempOutput.append(imgName)
-    return imgName
+    cairosvg.svg2png(url=file_path, write_to=img_name, scale=scale, output_height=output_height, output_width=output_width)
+    tempOutput.append(img_name)
+    return img_name
 
 def clear() -> None:
     try:
@@ -23,7 +24,7 @@ def clear() -> None:
         for tempPath in tempOutput:
             exception_file = tempPath
             os.remove(tempPath)
-            print(f'File {tempOutput} deleted successfully.')
+            print(f'File {tempPath} deleted successfully.')
     except FileNotFoundError:
         print(f'File {exception_file} does not exist.')
     except PermissionError:
