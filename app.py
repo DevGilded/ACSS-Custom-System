@@ -5,6 +5,7 @@ import common.Opksvg as opkSVG
 import pages.extension.sidebar as sidebar
 import pages.extension.hero as hero
 import pages.member as member
+import pages.home as home
 
 from settings import *
 
@@ -20,6 +21,7 @@ def count_widgets(parent):
     
     traverse(parent)
     return count
+
 
 class Application(tk.Tk):
     SETTING = {
@@ -51,15 +53,35 @@ class Application(tk.Tk):
         self.sidebar.place(relheight=1, height=-60, y=60, x=-3)
         self.body.place(relheight=1, height=-60, y=60, relwidth=1)
 
-        #~ Hero
-        hero.MEMBER(self.hero)
+        self.__change_page__('home')
 
-        #~ Sidebar
-        sidebar.MEMBER(self.sidebar, self.body)
+    def __change_page__(self, page) -> None:
+        destroy_children(self.hero)
+        destroy_children(self.sidebar)
+        destroy_children(self.body)
 
-        #~ Body
-        member.Instance(self.body)
+        match page:
+            case 'home':
+                hr = hero.HOME(self.hero)
+                sd = sidebar.HOME(self.sidebar, self.body)
+                home.Load(self.body)
+            case 'member':
+                hr = hero.MEMBER(self.hero)
+                sd = sidebar.MEMBER(self.sidebar, self.body)
+                member.Load(self.body)
+            case 'setting':
+                raise NotImplemented
+            case _:
+                raise NotImplemented("Page is not Implemented")
 
+        sd.Widgets['HomeBtn'].configure(command=lambda: self.__change_page__('home'))
+        sd.Widgets['MemberBtn'].configure(command=lambda: self.__change_page__('member'))
+        sd.Widgets['SettingBtn'].configure(command=lambda: self.__change_page__('setting'))
+
+def destroy_children(parent: tk.Widget) -> None:
+    if len(parent.children) > 0:
+        for widget in parent.winfo_children():
+            widget.destroy()
 
 if __name__ == '__main__':
     start = time.time()

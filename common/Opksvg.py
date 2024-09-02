@@ -19,8 +19,8 @@ def ToPNG(file_path: str, scale: float = 1, output_height: Any | None = None, ou
     return img_name
 
 def clear() -> None:
+    exception_file = ''
     try:
-        exception_file = ''
         for tempPath in tempOutput:
             exception_file = tempPath
             os.remove(tempPath)
@@ -31,3 +31,8 @@ def clear() -> None:
         print(f'Permission denied: Unable to delete {exception_file}.')
     except Exception as e:
         print(f'An error occurred: {e}')
+    finally:
+        # Making sure deleting all file inside the temp image path if there's something or someone put a file in it.
+        for path in os.scandir('assets/temp/image'):
+            os.remove(path.path)
+            print(f'File {path.path} deleted successfully.')

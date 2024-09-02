@@ -8,7 +8,7 @@ from PIL import Image
 from tkinter import filedialog
 from settings import *
 
-def personal_info(**kwargs):
+def personal_info(**kwargs) -> Image:
     name: str = kwargs.get('name', 'N/A')
     facebook_account: str = kwargs.get('facebook_account', 'N/A')
     sex: str = kwargs.get('sex', 'N/A')
@@ -56,8 +56,7 @@ def personal_info(**kwargs):
 
     return main_img.resize((round(main_img.size[0] / resolution), round(main_img.size[1] / resolution)))
 
-def specialization(**kwargs):
-
+def specialization(**kwargs) -> Image:
     resolution = 4
 
     default_font = FONT(FuturaBook, (14*TkinterFontModifiyer) * resolution)
@@ -103,7 +102,7 @@ def import_excel(event: tk.Event):
             # content = f.read()
             # print(content)
 
-class Instance:
+class Load:
     def __init__(self, master: tk.Frame) -> None:
 
         self.Widgets: dict[str, tk.Widget | opk.Table] = {
@@ -130,7 +129,7 @@ class Instance:
         }
         self.FilterWidget: dict[str, tk.Label | tk.OptionMenu] = {
             'Label': tk.Label(self.Widgets['Filter'], text='Filter by', font=('Futura Hv BT', 11)),
-            'DropDown': opk.DropDown(self.Widgets['Filter'], 'List', Specialization, text='-- Choose a Category --', font=('Futura Hv BT', 9), width=22, background=PRIMARY_COLOR, foreground=BLANK, activeforeground=BLANK, relief='sunken')
+            'DropDown': opk.ComboBox(self.Widgets['Filter'], Specialization, text='-- Choose a Category --', font=('Futura Hv BT', 9), width=22, background=PRIMARY_COLOR, foreground=BLANK, activeforeground=BLANK, relief='sunken')
         }
 
         for widget in self.FilterWidget:
