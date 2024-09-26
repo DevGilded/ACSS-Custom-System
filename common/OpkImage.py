@@ -1,15 +1,12 @@
 import string
 
 from functools import lru_cache
+
 from PIL import Image, ImageFont, ImageDraw
 from typing import Literal
-from settings import *
-
-DEFAULT_FONT = FONT(FuturaBook, 12*TkinterFontModifiyer)
-HEAVY_DEFAULT_FONT = FONT(FuturaHeavy, 12*TkinterFontModifiyer)
 
 @lru_cache
-def image_text(text: str, font: ImageFont.FreeTypeFont = DEFAULT_FONT):
+def image_text(text: str, font: ImageFont.FreeTypeFont):
     _, _, width, height = font.getbbox(text)
     _, _, _, h = font.getbbox(string.ascii_uppercase+string.ascii_lowercase)
     _, _, w, _ = font.getbbox('A')
@@ -40,3 +37,23 @@ def combine_two_image(image1: Image.Image, image2: Image.Image, orientation: Lit
     img.paste(image2, (0 if orientation == 'vertical' else width1, 0 if orientation == 'horizontal' else height1,))
 
     return img
+
+@lru_cache
+def create_circle(radius = 4, background = 'white', outline = 'black', width = 1) -> Image:
+    PI = 3.14159
+    circumference = 2 * PI * radius
+    resolution = 5
+    circumference *= resolution
+
+    img = Image.new('RGBA', (int(circumference), int(circumference)), '#0000')
+
+    draw = ImageDraw.Draw(img)
+    draw.ellipse((0, 0, circumference-1, circumference-1), fill = background, outline = outline, width = width * resolution)
+
+    # img.show()
+    circumference //= resolution
+    return img.resize((int(circumference), int(circumference)))
+
+if __name__ == '__main__':
+    print(create_circle())
+    create_circle(10).show()

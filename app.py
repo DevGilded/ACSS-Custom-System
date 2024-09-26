@@ -1,11 +1,14 @@
 import time
 import tkinter as tk
+
 import common.Opksvg as opkSVG
+import threading
 
 import pages.extension.sidebar as sidebar
 import pages.extension.hero as hero
 import pages.member as member
 import pages.home as home
+import pages.setting as setting
 
 from settings import *
 
@@ -40,6 +43,8 @@ class Application(tk.Tk):
         # self.attributes('-fullscreen', True)
         self.title('Association of Computer Science Students | CITE Members\' Specialization Data ')
 
+        self.event_stop = threading.Event()
+
         #~ PhotoImage
         self.update()
         self.Icons = tk.PhotoImage('assets/temp/image/Members-icon.png')
@@ -53,7 +58,7 @@ class Application(tk.Tk):
         self.sidebar.place(relheight=1, height=-60, y=60, x=-3)
         self.body.place(relheight=1, height=-60, y=60, relwidth=1)
 
-        self.__change_page__('home')
+        self.__change_page__('member')
 
     def __change_page__(self, page) -> None:
         destroy_children(self.hero)
@@ -70,13 +75,16 @@ class Application(tk.Tk):
                 sd = sidebar.MEMBER(self.sidebar, self.body)
                 member.Load(self.body)
             case 'setting':
-                raise NotImplemented
+                hr = hero.SETTING(self.hero)
+                sd = sidebar.SETTING(self.sidebar, self.body)
+                setting.Load(self.body)
             case _:
                 raise NotImplemented("Page is not Implemented")
 
         sd.Widgets['HomeBtn'].configure(command=lambda: self.__change_page__('home'))
         sd.Widgets['MemberBtn'].configure(command=lambda: self.__change_page__('member'))
         sd.Widgets['SettingBtn'].configure(command=lambda: self.__change_page__('setting'))
+
 
 def destroy_children(parent: tk.Widget) -> None:
     if len(parent.children) > 0:

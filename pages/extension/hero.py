@@ -47,7 +47,7 @@ class MEMBER:
 
 class SETTING:
     def __init__(self, master: tk.Frame) -> None:
-        icon = opkSVG.ToPNG('assets/svg/Settings-icon.svg', 1.5)
+        icon = opkSVG.ToPNG('assets/svg/Settings-icon.svg', 2)
 
         self.Widgets = {
             'TitleLbl': opk.Title(master, text='CITE Members\' Specialization Data',

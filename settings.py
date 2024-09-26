@@ -16,8 +16,12 @@ FONTLIST = {
 FONT = lambda font, size: ImageFont.truetype(font, size)
 TkinterFontModifiyer = 1.318
 
+# First Iteration of Color
 PRIMARY_COLOR = '#716EF4'
 SECONDARY_COLOR = '#F2F46E'
+# # Second Iteration of Color
+# PRIMARY_COLOR = '#661A7D'
+# SECONDARY_COLOR = '#FDD116'
 SUCCES_COLOR = '#91F46E'
 ERROR_COLOR = '#F46E6E'
 BLANK = '#ffffff'
