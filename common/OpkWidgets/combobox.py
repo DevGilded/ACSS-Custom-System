@@ -36,6 +36,7 @@ class ComboBox(tk.Frame):
         if name in self._selected.children:
             return
 
+        print(name)
         selected = Button(self._selected, text=name.upper(), name=name, font=(self._font[0], self._font[1]-2), background=SECONDARY_COLOR, radius=10, width=len(name.upper())+2)
         selected.pack(side = tk.LEFT, anchor=tk.W, pady=2)
         selected.configure(command=lambda n = name: self.remove_selected(n, True))

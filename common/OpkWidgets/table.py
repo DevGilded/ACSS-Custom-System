@@ -4,6 +4,7 @@ from typing import Callable
 
 from common.OpkWidgets.row import Row
 from common.OpkWidgets.button import Button
+from common.Opkfilter import DataBaseDictFilter
 from data.database.DBmanager import DataBase
 from settings import SECONDARY_COLOR, PRIMARY_COLOR
 
@@ -24,6 +25,13 @@ class Table(tk.Frame):
         self.table = {}
         for table in self.database.get_table():
             self.table[table] = self.database.get_column(table, '*')
+
+        # for t, v in DataBaseDictFilter(self.table, 'Volleyball').found().items():
+        #     self.table[t] = {}
+        #     index = 1
+        #     for ky, it in v.items():
+        #         self.table[t][index] = it
+        #         index += 1
 
         self.create_column_header()
 
